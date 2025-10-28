@@ -1,0 +1,160 @@
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Productos — FarmaGo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- Navbar -->
+    <header class="bg-white shadow-sm">
+      <div class="main-container flex items-center justify-between py-4">
+        <div class="flex items-center gap-3">
+          <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="FarmaGo" class="h-10 w-auto">
+          <a href="{{ url_for('home') }}" class="text-lg font-semibold">FarmaGo</a>
+        </div>
+        <nav class="hidden md:flex items-center gap-4">
+          <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-green-600">Inicio</a>
+          <a href="{{ url_for('productos') }}" class="text-gray-600 hover:text-green-600 font-medium">Productos</a>
+          <a href="{{ url_for('login') }}" class="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Entrar</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Buscador -->
+    <main class="main-container py-12">
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="flex flex-col md:flex-row gap-4 md:items-center">
+          <div class="flex-1">
+            <label class="text-sm font-medium">Buscar producto</label>
+            <input id="search-input" type="text" placeholder="Ej: paracetamol, vitamina c" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm p-2">
+          </div>
+
+          <div class="w-48">
+            <label class="text-sm font-medium">Ordenar por</label>
+            <select id="sort-select" class="mt-1 block w-full rounded-md border-gray-200 p-2">
+              <option value="relevance">Relevancia</option>
+              <option value="price-asc">Precio: menor primero</option>
+              <option value="price-desc">Precio: mayor primero</option>
+              <option value="distance-asc">Cercanía: más cerca</option>
+            </select>
+          </div>
+
+          <div class="flex items-end gap-2">
+            <button id="use-loc" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Usar mi ubicación</button>
+            <button id="do-search" class="px-4 py-2 border rounded-md">Buscar</button>
+          </div>
+        </div>
+
+        <div class="mt-6 text-sm text-gray-500">Resultados para: <span id="search-term" class="font-medium">—</span></div>
+
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4" id="results">
+          <!-- resultados se inyectan aquí -->
+        </div>
+      </div>
+    </main>
+
+    <footer class="text-center py-8 text-sm text-gray-500">
+      © FarmaGo
+    </footer>
+
+    <script>
+      // Datos de ejemplo (cliente-side)
+      const PRODUCTS = [
+        { id:1, name:'Paracetamol 500mg', price:5.99, lat:-34.6039, lng:-58.3816, img:'producto1.jpg' },
+        { id:2, name:'Vitamina C 1000mg', price:8.99, lat:-34.6000, lng:-58.3800, img:'producto2.jpg' },
+        { id:3, name:'Crema Hidratante', price:12.00, lat:-34.6100, lng:-58.3900, img:'producto3.jpg' },
+        { id:4, name:'Termómetro digital', price:15.99, lat:-34.5950, lng:-58.3700, img:'producto4.jpg' }
+      ]
+
+      let userLocation = null
+      const PHARMACY = { lat: -34.603722, lng: -58.381592 }
+
+      function haversine(a,b){
+        const R = 6371
+        const toRad = x => x * Math.PI/180
+        const dLat = toRad(b.lat - a.lat)
+        const dLon = toRad(b.lng - a.lng)
+        const lat1 = toRad(a.lat), lat2 = toRad(b.lat)
+        const h = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2
+        return 2*R*Math.asin(Math.sqrt(h))
+      }
+
+      function renderResults(list, term='—'){
+        const container = document.getElementById('results')
+        document.getElementById('search-term').textContent = term || '—'
+        container.innerHTML = ''
+        if (!list.length) {
+          container.innerHTML = '<div class="p-6 text-center text-gray-500">No se encontraron productos.</div>'
+          return
+        }
+        list.forEach(p => {
+          const distKm = p.distance !== undefined ? `<div class="text-xs text-gray-500">Dist: ${p.distance.toFixed(2)} km</div>` : ''
+          const imgUrl = '{{ url_for("static", filename="") }}' + p.img
+          const node = document.createElement('article')
+          node.className = 'bg-white p-4 rounded-lg shadow-sm flex gap-4 items-center'
+          node.innerHTML = `
+            <img src="${imgUrl}" alt="${p.name}" class="w-20 h-20 object-cover rounded">
+            <div class="flex-1">
+              <div class="flex justify-between items-start gap-2">
+                <div>
+                  <h4 class="font-semibold">${p.name}</h4>
+                  <div class="text-sm text-gray-500">Precio: $${p.price.toFixed(2)}</div>
+                  ${distKm}
+                </div>
+                <div class="text-right">
+                  <div class="text-lg font-bold text-green-700">$${p.price.toFixed(2)}</div>
+                  <button class="mt-2 px-3 py-1 bg-green-50 text-green-700 rounded text-sm">Agregar</button>
+                </div>
+              </div>
+            </div>
+          `
+          container.appendChild(node)
+        })
+      }
+
+      function doSearch(){
+        const q = document.getElementById('search-input').value.trim().toLowerCase()
+        const sort = document.getElementById('sort-select').value
+        let items = PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || q === '')
+        const ref = userLocation || PHARMACY
+        items = items.map(p => ({...p, distance: haversine(ref, {lat:p.lat, lng:p.lng})}))
+        if (sort === 'price-asc') items.sort((a,b)=> a.price - b.price)
+        else if (sort === 'price-desc') items.sort((a,b)=> b.price - a.price)
+        else if (sort === 'distance-asc') items.sort((a,b)=> a.distance - b.distance)
+        else items.sort((a,b)=>{
+          const na = a.name.toLowerCase().indexOf(q)
+          const nb = b.name.toLowerCase().indexOf(q)
+          if (na === nb) return a.price - b.price
+          if (na === -1) return 1
+          if (nb === -1) return -1
+          return na - nb
+        })
+        renderResults(items, q || 'todos')
+      }
+
+      document.getElementById('do-search').addEventListener('click', doSearch)
+      document.getElementById('search-input').addEventListener('keydown', e => { if (e.key==='Enter') doSearch() })
+      document.getElementById('sort-select').addEventListener('change', doSearch)
+
+      document.getElementById('use-loc').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          alert('Geolocalización no disponible en este navegador.')
+          return
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+          userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+          doSearch()
+        }, () => {
+          alert('No se pudo obtener la ubicación (permiso denegado o error).')
+        }, { enableHighAccuracy:true, timeout:10000 })
+      })
+
+      // init
+      renderResults(PRODUCTS)
+    </script>
+  </body>
+</html>

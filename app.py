@@ -7,6 +7,11 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
+# Página de productos
+@app.route('/productos')
+def productos():
+    return render_template('products.html')
+
 # Página de login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
