@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Farmacia - Inicio</title>
+    <!-- Tailwind via CDN (rápido para prototipos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- Navbar -->
+    <header class="bg-white shadow-sm">
+      <div class="main-container flex items-center justify-between py-4">
+        <div class="flex items-center gap-3">
+        <!-- Navbar -->
+<header class="bg-white shadow-sm">
+  <div class="main-container flex items-center justify-between py-4">
+    <div class="flex items-center gap-3">
+      <!-- Reemplazar este div del logo -->
+      <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="FarmaGo Logo" class="h-12 w-auto">
+      <!-- Reemplazar el texto del enlace -->
+      <a href="{{ url_for('home') }}" class="text-xl font-semibold">FarmaGo</a>
+    </div>
+    <!-- ...resto del navbar se mantiene igual... -->
+        <a href="{{ url_for('home') }}" class="text-xl font-semibold">Farmacia Online</a>
+        </div>
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="#productos" class="text-gray-600 hover:text-teal-600">Productos</a>
+          <a href="#servicios" class="text-gray-600 hover:text-teal-600">Servicios</a>
+          <a href="{{ url_for('login') }}" class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600">Iniciar sesión</a>
+        </nav>
+        <div class="md:hidden">
+          <a href="{{ url_for('login') }}" class="px-3 py-2 bg-teal-500 text-white rounded-md">Entrar</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="bg-white">
+      <div class="main-container grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-12">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">Tu salud en buenas manos</h1>
+          <p class="mt-4 text-gray-600">Compra medicamentos, productos de cuidado personal y recibe asesoría farmacéutica desde casa. Envíos a todo el país y atención personalizada.</p>
+
+          <div class="mt-6 flex gap-3">
+            <a href="#productos" class="inline-block px-5 py-3 bg-teal-500 text-white rounded-md shadow">Ver productos</a>
+            <a href="#servicios" class="inline-block px-5 py-3 border border-gray-200 rounded-md text-gray-700">Nuestros servicios</a>
+          </div>
+        </div>
+        <div class="w-full flex justify-center">
+          <img src="https://images.unsplash.com/photo-1580281657520-4d7bd6b5b8b0?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b6be044f2b5e7e0aeb8d44bc7d2b0d8" alt="Farmacia" class="rounded-lg shadow-lg max-w-full h-64 object-cover">
+        </div>
+      </div>
+    </section>
+
+    <!-- Productos (grid) -->
+    <section id="productos" class="py-12">
+      <div class="main-container">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-semibold">Productos destacados</h2>
+          <a href="#" class="text-sm text-teal-600">Ver todos</a>
+        </div>
+
+        <div class="mt-6 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <!-- Producto 1 -->
+          <article class="bg-white rounded-lg overflow-hidden card-shadow">
+            <img class="product-image" src="https://images.unsplash.com/photo-1580281657520-4d7bd6b5b8b0?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b6be044f2b5e7e0aeb8d44bc7d2b0d8" alt="Vitamina C">
+            <div class="p-4">
+              <h3 class="font-semibold">Vitamina C 500mg</h3>
+              <p class="text-sm text-gray-500 mt-1">30 cápsulas</p>
+              <div class="mt-3 flex items-center justify-between">
+                <div class="text-lg font-bold">$8.99</div>
+                <a href="#" class="px-3 py-1 text-sm bg-teal-50 text-teal-700 rounded">Agregar</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Producto 2 -->
+          <article class="bg-white rounded-lg overflow-hidden card-shadow">
+            <img class="product-image" src="https://images.unsplash.com/photo-1582719478174-1f3c5232f2a7?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=4ca6f3b9b9f6a0b3e2b0154d6d6a8b5a" alt="Analgésico">
+            <div class="p-4">
+              <h3 class="font-semibold">Analgésico 200mg</h3>
+              <p class="text-sm text-gray-500 mt-1">20 comprimidos</p>
+              <div class="mt-3 flex items-center justify-between">
+                <div class="text-lg font-bold">$5.50</div>
+                <a href="#" class="px-3 py-1 text-sm bg-teal-50 text-teal-700 rounded">Agregar</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Producto 3 -->
+          <article class="bg-white rounded-lg overflow-hidden card-shadow">
+            <img class="product-image" src="https://images.unsplash.com/photo-1582719476892-4e3b7b8b0b1a?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=0ef6f2d2c5c7c1e1a1a1d1c1e1f2a3b4" alt="Crema hidratante">
+            <div class="p-4">
+              <h3 class="font-semibold">Crema Hidratante 100ml</h3>
+              <p class="text-sm text-gray-500 mt-1">Cuidado diario</p>
+              <div class="mt-3 flex items-center justify-between">
+                <div class="text-lg font-bold">$12.00</div>
+                <a href="#" class="px-3 py-1 text-sm bg-teal-50 text-teal-700 rounded">Agregar</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Producto 4 -->
+          <article class="bg-white rounded-lg overflow-hidden card-shadow">
+            <img class="product-image" src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=447c5d7b4e7f9d0c6f3a4a3f4b5a6c7d" alt="Termómetro">
+            <div class="p-4">
+              <h3 class="font-semibold">Termómetro digital</h3>
+              <p class="text-sm text-gray-500 mt-1">Lectura rápida</p>
+              <div class="mt-3 flex items-center justify-between">
+                <div class="text-lg font-bold">$15.99</div>
+                <a href="#" class="px-3 py-1 text-sm bg-teal-50 text-teal-700 rounded">Agregar</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="py-12 bg-white/50">
+      <div class="main-container">
+        <h2 class="text-2xl font-semibold">Nuestros servicios</h2>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 bg-white rounded-lg card-shadow">
+            <h3 class="font-semibold">Entrega a domicilio</h3>
+            <p class="text-sm text-gray-500 mt-2">Rápido y seguro. Seguimiento de pedidos en tiempo real.</p>
+          </div>
+          <div class="p-6 bg-white rounded-lg card-shadow">
+            <h3 class="font-semibold">Asesoría farmacéutica</h3>
+            <p class="text-sm text-gray-500 mt-2">Consulta con nuestros farmacéuticos para dudas sobre medicamentos.</p>
+          </div>
+          <div class="p-6 bg-white rounded-lg card-shadow">
+            <h3 class="font-semibold">Recordatorios de medicación</h3>
+            <p class="text-sm text-gray-500 mt-2">Activa alertas para no olvidar tus dosis.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+      <div class="main-container py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <h4 class="font-semibold">Farmacia Online</h4>
+          <p class="footer-note mt-2">Cuidamos tu salud con productos originales y personal capacitado.</p>
+        </div>
+        <div class="flex gap-6 items-center">
+          <a href="#" class="text-gray-600 hover:text-teal-600">Términos</a>
+          <a href="#" class="text-gray-600 hover:text-teal-600">Privacidad</a>
+        </div>
+      </div>
+    </footer>
+
+  </body>
+  </html>
