@@ -1,19 +1,183 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Login - Farmacia App</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <h2>Iniciar sesión</h2>
-  <form method="POST">
-    <label for="usuario">Usuario:</label><br>
-    <input type="text" id="usuario" name="usuario" required><br><br>
+<!-- ...existing code... -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Iniciar sesión — FarmaGo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- Navbar simple -->
+    <header class="bg-white shadow-sm">
+      <div class="main-container flex items-center justify-between py-4">
+        <div class="flex items-center gap-3">
+          <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="FarmaGo" class="h-10 w-auto">
+          <a href="{{ url_for('home') }}" class="text-lg font-semibold">FarmaGo</a>
+        </div>
+        <nav class="hidden md:flex items-center gap-4">
+          <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-green-600">Inicio</a>
+          <a href="{{ url_for('home') }}#productos" class="text-gray-600 hover:text-green-600">Productos</a>
+        </nav>
+      </div>
+    </header>
 
-    <label for="contraseña">Contraseña:</label><br>
-    <input type="password" id="contraseña" name="contraseña" required><br><br>
+    <!-- Contenedor -->
+    <main class="min-h-[70vh] flex items-center justify-center py-12">
+      <div class="w-full max-w-3xl mx-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Hero pequeño -->
+        <section class="hidden md:flex flex-col justify-center bg-white rounded-lg shadow-lg p-8">
+          <h2 class="text-2xl font-extrabold">Bienvenido a FarmaGo</h2>
+          <p class="mt-4 text-gray-600">Compra medicamentos, recibe asesoría y programá entregas a domicilio. Si no tienes cuenta, crea una en segundos.</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-600">
+            <li>• Entrega rápida</li>
+            <li>• Soporte farmacéutico</li>
+            <li>• Recordatorios y repeticiones</li>
+          </ul>
+          <img src="{{ url_for('static', filename='hero-image.jpg') }}" alt="FarmaGo" class="mt-6 rounded-md object-cover h-40 w-full">
+        </section>
 
-    <button type="submit">Ingresar</button>
-  </form>
-</body>
+        <!-- Card de autenticación -->
+        <section class="bg-white rounded-lg shadow-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 id="form-title" class="text-xl font-semibold">Iniciar sesión</h3>
+            <div class="text-sm text-gray-500">¿Nuevo? <button id="show-register" class="text-green-600 hover:underline">Crea una cuenta</button></div>
+          </div>
+
+          <!-- Mensajes desde servidor -->
+          {% if error %}
+            <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded">{{ error }}</div>
+          {% endif %}
+          {% if message %}
+            <div class="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded">{{ message }}</div>
+          {% endif %}
+
+          <!-- Login form -->
+          <form id="login-form" action="{{ url_for('login') }}" method="POST" class="space-y-4">
+            <div>
+              <label class="text-sm font-medium">Usuario</label>
+              <input required name="usuario" type="text" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="Ej: mica">
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Contraseña</label>
+              <div class="relative">
+                <input required name="contraseña" id="login-password" type="password" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm pr-10 focus:ring-green-500 focus:border-green-500" placeholder="••••••••">
+                <button type="button" id="toggle-login-pw" class="absolute right-2 top-2 text-sm text-gray-500">Mostrar</button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <label class="inline-flex items-center text-sm">
+                <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600"> <span class="ml-2">Recordarme</span>
+              </label>
+              <a href="#" class="text-sm text-gray-500 hover:underline">Olvidé mi contraseña</a>
+            </div>
+
+            <div>
+              <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Ingresar</button>
+            </div>
+          </form>
+
+          <!-- Registro (oculto por defecto) -->
+          <form id="register-form" action="/register" method="POST" class="space-y-4 hidden">
+            <div>
+              <label class="text-sm font-medium">Nombre de usuario</label>
+              <input name="usuario" type="text" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="Nombre de usuario">
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Correo electrónico</label>
+              <input name="email" type="email" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="tu@ejemplo.com">
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Contraseña</label>
+              <input name="contraseña" id="reg-password" type="password" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Repetir contraseña</label>
+              <input name="contraseña2" id="reg-password2" type="password" required class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="Repite la contraseña">
+            </div>
+
+            <div id="register-error" class="text-sm text-red-600 hidden"></div>
+
+            <div class="flex gap-2">
+              <button id="register-submit" type="button" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Crear cuenta</button>
+              <button id="cancel-register" type="button" class="flex-1 px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50">Cancelar</button>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-2">Al crear una cuenta aceptas nuestros <a href="#" class="text-green-600 hover:underline">Términos</a> y <a href="#" class="text-green-600 hover:underline">Política de privacidad</a>.</p>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer class="text-center py-6 text-sm text-gray-500">
+      © {{ current_year if current_year is defined else "2025" }} FarmaGo — Todos los derechos reservados
+    </footer>
+
+    <script>
+      // Toggle register/login
+      const showRegisterBtn = document.getElementById('show-register')
+      const registerForm = document.getElementById('register-form')
+      const loginForm = document.getElementById('login-form')
+      const formTitle = document.getElementById('form-title')
+      const cancelRegister = document.getElementById('cancel-register')
+      const registerSubmit = document.getElementById('register-submit')
+      const regPass = document.getElementById('reg-password')
+      const regPass2 = document.getElementById('reg-password2')
+      const registerError = document.getElementById('register-error')
+      const toggleLoginPw = document.getElementById('toggle-login-pw')
+      const loginPw = document.getElementById('login-password')
+
+      showRegisterBtn?.addEventListener('click', () => {
+        loginForm.classList.add('hidden')
+        registerForm.classList.remove('hidden')
+        formTitle.textContent = 'Crear cuenta'
+      })
+
+      cancelRegister?.addEventListener('click', () => {
+        registerForm.classList.add('hidden')
+        loginForm.classList.remove('hidden')
+        formTitle.textContent = 'Iniciar sesión'
+        registerError.classList.add('hidden')
+      })
+
+      // Simple client-side validation for register (demo)
+      registerSubmit?.addEventListener('click', () => {
+        registerError.classList.add('hidden')
+        if (!regPass.value || regPass.value.length < 6) {
+          registerError.textContent = 'La contraseña debe tener al menos 6 caracteres.'
+          registerError.classList.remove('hidden')
+          return
+        }
+        if (regPass.value !== regPass2.value) {
+          registerError.textContent = 'Las contraseñas no coinciden.'
+          registerError.classList.remove('hidden')
+          return
+        }
+        // Si quieres que el registro vaya al servidor, cambia esto a submit():
+        // registerForm.submit()
+        // Por ahora mostramos confirmación visual (simulación)
+        registerError.classList.remove('hidden')
+        registerError.classList.remove('text-red-600')
+        registerError.classList.add('text-green-700')
+        registerError.textContent = 'Registro simulado: envía el formulario al backend (/register) para completar.'
+      })
+
+      // Mostrar/ocultar contraseña login
+      toggleLoginPw?.addEventListener('click', () => {
+        if (loginPw.type === 'password') {
+          loginPw.type = 'text'
+          toggleLoginPw.textContent = 'Ocultar'
+        } else {
+          loginPw.type = 'password'
+          toggleLoginPw.textContent = 'Mostrar'
+        }
+      })
+    </script>
+  </body>
 </html>
